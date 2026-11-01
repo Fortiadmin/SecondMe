@@ -1,4 +1,12 @@
-# SecondMe — ingesta de grabaciones en los segundos cerebros
+# SecondMe — ingesta y consulta de los segundos cerebros
+
+Dos piezas:
+
+- **`ingesta/`** lleva las grabaciones de `C:\V` a Know y a SecondB (LauncherV y la skill `ingesta-v`).
+- **`cerebro/`** es el índice único de los tres cerebros (Know, SecondB y Second Claude), con la skill
+  `cerebro` para preguntarles. Se describe en la sección [Índice único](#índice-único-cerebro).
+
+## Ingesta de grabaciones
 
 Lleva las grabaciones de `C:\V` a los dos cerebros:
 
@@ -110,3 +118,51 @@ python ingesta/test_ingesta_videos.py
 ```
 
 30 pruebas sobre carpetas temporales con un `/watch` falso; no tocan `C:\V`, Know ni SecondB.
+
+## Índice único (cerebro)
+
+`cerebro/cerebro.py` lee **sin modificarlos** los tres cerebros y los indexa juntos en
+`cerebro/indice.db` (SQLite FTS5 con BM25; derivado, fuera de OneDrive y fuera de git). Solo usa
+biblioteca estándar y no llama a ningún modelo.
+
+| Cerebro | Qué se indexa | Fichas |
+|---|---|---|
+| Know | `summary.md` + `meta.json` de cada reunión (no `_retiradas` ni `_kb`) | reunión, documento |
+| SecondB | `memoria/reuniones/*.md`; tickets (página + `historial_tickets.csv` + `acuerdos.csv` con su estado); `temas.csv` agregado por tema | seguimiento, ticket, tema |
+| Second Claude | `raw/resumenes/*.md` (sin los "descartar") y `wiki/*/*.md` | sesion, wiki-proyecto, wiki-tema, wiki-entidad |
+
+Cada documento es una **ficha** con el mismo esquema: cerebro, tipo, fecha, título, personas, tickets,
+claves, texto, ruta y detalle. Sus secciones de decisiones, pendientes, acciones, problemas,
+conocimiento, propuestas y compromisos se trocean en **átomos** (cada punto de lista o fila de tabla),
+que se indexan aparte. Así una búsqueda devuelve la frase exacta y la ficha a la que pertenece. Las
+secciones de cautelas, capturas y lecturas no se indexan.
+
+```bash
+python cerebro/cerebro.py search "función de reparto del continuo" [--cerebro …] [--tipo …] [--desde …] [--hasta …]
+python cerebro/cerebro.py ticket 27703          # lo que dicen los tres cerebros, en orden
+python cerebro/cerebro.py show "know:2026-10-28 Seg Business Central"
+python cerebro/cerebro.py grep "Intermoney" --ambito transcripciones   # literal, con [MM:SS] / [~MM:SS]
+python cerebro/cerebro.py status
+python cerebro/cerebro.py sync                  # forzar la reconstrucción (normalmente no hace falta)
+```
+
+**Ranking.** Primero va lo que cubre más términos de la consulta **en un mismo átomo**, o en el
+título y las claves de la ficha. Después cuenta BM25, que pondera más el título que las claves y las
+claves más que el texto. La fecha solo desempata: un acuerdo antiguo no caduca por ser antiguo. El
+texto corrido de una ficha no cuenta para la cobertura, porque un resumen largo "cubriría" cualquier
+consulta. Los alias son los de `Know/_kb/aliases.json`, también los de varias palabras.
+
+**Frescura.** Cada consulta compara una firma de las fuentes (número de ficheros y última
+modificación) con la del índice, y si ha cambiado lo reconstruye antes de responder. Con unas 430
+fichas y 3.000 átomos tarda menos de un segundo.
+
+**Skill `cerebro`.** Vive en `.claude/skills/cerebro/` y está enlazada con una unión de directorio
+en `~/.claude/skills/cerebro`, así que sirve desde cualquier proyecto. Primero busca con varias
+formulaciones, luego tira de `ticket`, `show` y `grep`, y para el estado actual va a las fuentes vivas
+(AgenteRed, Microsoft 365). Cita siempre cerebro, fecha y fuente.
+
+**Pendiente (fase 2b).** El átomo de "preguntas con las que se buscaría", generado con modelo, se
+dejó para más adelante. Se añadirá si en uso real hay preguntas que no encuentran su respuesta
+porque la respuesta está escrita con otras palabras.
+
+Pruebas: `python cerebro/test_cerebro.py` (13, con tres cerebros de juguete en carpetas temporales).

@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+cerebro/indice.db
+cerebro/indice.db.tmp
