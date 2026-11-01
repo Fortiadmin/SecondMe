@@ -1,0 +1,12 @@
+{
+  "_comentario": "Que grabaciones van a la memoria del servicio (SecondB) y con que sistema. Todo lo demas va a Know. Manda el nombre del fichero (expresiones regulares, sin acentos ni mayusculas); si no dice nada, el asunto exacto de la convocatoria de Teams.",
+  "secondb_por_nombre": {
+    "\\bseg(uimiento)?\\.? ?ems\\b": "EMS",
+    "\\bseg(uimiento)?\\.? ?alten\\b": "EMS",
+    "\\bseg(uimiento)?\\.? ?axapta\\b": "Axapta"
+  },
+  "secondb_por_asunto": {
+    "Seguimiento desarrollos Alten - Fortia": "EMS",
+    "Seguimiento AXAPTA": "Axapta"
+  }
+}
