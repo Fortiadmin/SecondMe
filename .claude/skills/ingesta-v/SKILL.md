@@ -35,6 +35,19 @@ Los `pendientes` son publicaciones a medias de otra pasada (publicadas, sin cons
 primero (Paso 5) antes de abrir elementos nuevos de la bandeja. Salta los elementos con `revisar`
 puesto: esperan una decisión del usuario.
 
+### Pasada de un solo destino
+
+LauncherV abre dos pasadas: «solo con destino Know» (Sonnet) y luego «solo con destino SecondB»
+(Opus). En una pasada así trata solo lo de su destino y deja lo demás **tal cual** para la otra
+pasada: sin `revisar`, sin tocar frames y sin publicar.
+
+- `pendientes`: solo los de ese `destino`.
+- Elementos con `destino_por_nombre`: van a SecondB.
+- Los demás: haz el Paso 1 y aplica `secondb_por_asunto` de `ingesta/enrutado.json` (asunto
+  exacto) a la convocatoria elegida. Si no es tu destino, borra `convocatoria-<elemento>.json`
+  y sigue con el siguiente.
+- En el cierre, lista los elementos que dejas para la otra pasada.
+
 ## Paso 1 — Convocatoria de Teams
 
 **Si la herramienta de calendario de Outlook no está disponible en esta sesión** (conector de

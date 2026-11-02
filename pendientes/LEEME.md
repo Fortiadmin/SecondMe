@@ -1,4 +1,10 @@
-# Pendiente: rehacer el resumen de 2026-07-17 Revisión arquitectura Azure
+# Pendientes
+
+- **Fase 3** (wiki de Second Claude alimentado también por las reuniones, más la comprobación de
+  salud): plan y decisiones en [fase3-plan.md](fase3-plan.md).
+- **Resumen del 2026-07-17**: ver abajo.
+
+## Pendiente: rehacer el resumen de 2026-07-17 Revisión arquitectura Azure
 
 El summary.md de esa carpeta de Know se escribió solo con frames, cuando no había
 transcripción. El 2026-11-01 un agente redactó uno nuevo con la transcripción de

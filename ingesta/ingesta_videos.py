@@ -998,7 +998,7 @@ def cmd_sugerencia(args) -> int:
           f"({s['elementos']} elemento(s)) - {s['motivo']}.")
     if s["dudosos"] and s["modelo"] != "opus":
         print(f"  {len(s['dudosos'])} sin titulo en el nombre: si la convocatoria resulta ser "
-              "un seguimiento, ira a SecondB con este modelo. Para usar Opus, elige P o /model.")
+              "un seguimiento, con S lo deja la pasada de Sonnet para la de Opus.")
     return 0
 
 

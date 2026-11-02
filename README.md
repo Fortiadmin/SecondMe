@@ -17,6 +17,16 @@ Lleva las grabaciones de `C:\V` a los dos cerebros:
 Se lanza a mano con el icono **LauncherV** del escritorio (`LauncherV.bat`). No hay tareas
 programadas.
 
+Para grabar, el icono **StartO** del escritorio (`StartO.ps1`) abre OBS ya grabando la
+ventana de la reunión de Teams en curso, en la colección de escenas `Teams reunion` (generada en
+cada uso a partir de `Sin Título`, con el audio predeterminado de Windows). OBS tiene que estar
+cerrado. El icono **StopO** (`StopO.ps1`) para la grabación con el atajo de OBS
+Ctrl+Mayús+D, espera a que el fichero quede cerrado y cierra OBS.
+
+El icono **IngestaV** (`IngestaV.bat`) hace solo el paso 2 de LauncherV: abre Claude con la skill
+`ingesta-v` sobre lo que ya está en la bandeja, con el modelo y esfuerzo sugeridos. Sirve para
+retomar la bandeja sin volver a transcribir.
+
 ## Flujo
 
 ```
@@ -166,3 +176,23 @@ dejó para más adelante. Se añadirá si en uso real hay preguntas que no encue
 porque la respuesta está escrita con otras palabras.
 
 Pruebas: `python cerebro/test_cerebro.py` (13, con tres cerebros de juguete en carpetas temporales).
+
+## Salud
+
+`salud/salud.py` avisa de lo que lleva más de 2 días parado, sin modelo y sin escribir en los
+cerebros. Se ejecuta al arrancar LauncherV y al final de la tarea diaria de Second Claude, que
+pone los avisos al principio de su mensaje y en `log.md`.
+
+| Área | Avisa de |
+|---|---|
+| videos | pendientes viejos en `C:\V`, fallidos, elementos parados en la bandeja (info: mudos y borrables, con GB) |
+| reuniones | publicadas en Know o SecondB sin consolidar |
+| know | `kb.py status`: sync con errores, sin resumen, `meta.json` inválido o desactualizado |
+| second-claude | ninguna ingesta registrada en `log.md`, sesiones paradas en el staging (sin título: pueden ser personales), pendientes de integrar que no bajan |
+| wiki | enlaces relativos rotos, también los que apuntan a Know y SecondB |
+| indice | el índice único no se abre o está vacío |
+
+```bash
+python salud/salud.py [--dias 2] [--json]     # código 1 si hay avisos
+python salud/test_salud.py                    # 12 pruebas sobre carpetas temporales
+```
